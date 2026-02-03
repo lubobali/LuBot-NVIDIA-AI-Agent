@@ -220,7 +220,7 @@ intent, tier, conf = classifier.classify("Whats the correlation between age and 
 [MIT License](LICENSE)
 
 <p align="center">
-  <img src="docs/nvidia-logo.png" alt="NVIDIA" height="56">
+  <img src="docs/nvidia-logo.png" alt="NVIDIA" height="85">
   <br><br>
   <img src="docs/lubot-logo.png" alt="LuBot" height="30">
   &nbsp;
