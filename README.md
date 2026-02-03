@@ -220,9 +220,9 @@ intent, tier, conf = classifier.classify("Whats the correlation between age and 
 [MIT License](LICENSE)
 
 <p align="center">
-  <img src="docs/nvidia-logo.png" alt="NVIDIA" height="33">
+  <img src="docs/nvidia-logo.png" alt="NVIDIA" height="56">
   <br><br>
   <img src="docs/lubot-logo.png" alt="LuBot" height="30">
   &nbsp;
-  <strong><a href="https://lubot.ai">LuBot.ai</a></strong> — go try it. Powered by Nemotron.
+  <strong><a href="https://lubot.ai">LuBot.ai</a></strong> — go try it. Powered by NVIDIA Nemotron.
 </p>
