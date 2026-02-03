@@ -1,6 +1,6 @@
-# LuBot <img src="docs/nvidia-logo.png" alt="NVIDIA" height="30"> Routing
+# LuBot <img src="docs/nvidia-logo.png" alt="NVIDIA" height="80"> Routing
 
-### I built LuBot alone, from zero, over the last 8 months. This is the <img src="docs/nvidia-logo.png" alt="NVIDIA" height="22"> brain that powers it.
+### I built LuBot alone, from zero, over the last 8 months. This is the <img src="docs/nvidia-logo.png" alt="NVIDIA" height="50"> brain that powers it.
 
 **[lubot.ai](https://lubot.ai)** is live right now. Real users, real data, real NVIDIA API calls. Not a hackathon prototype.
 
@@ -213,4 +213,4 @@ intent, tier, conf = classifier.classify("Whats the correlation between age and 
 
 [MIT License](LICENSE)
 
-**[lubot.ai](https://lubot.ai)** - go try it. Powered by <img src="docs/nvidia-logo.png" alt="NVIDIA" height="22"> Nemotron.
+**[lubot.ai](https://lubot.ai)** - go try it. Powered by <img src="docs/nvidia-logo.png" alt="NVIDIA" height="50"> Nemotron.
