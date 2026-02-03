@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/nvidia-logo.png" alt="NVIDIA" height="60">
+  <img src="docs/nvidia-logo.png" alt="NVIDIA" height="84">
 </p>
 
 <h1 align="center">LuBot NVIDIA Routing</h1>
