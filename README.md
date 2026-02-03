@@ -4,6 +4,8 @@
 
 **[lubot.ai](https://lubot.ai)** is live right now. Real users, real data, real NVIDIA API calls. Not a hackathon prototype.
 
+![LuBot Home](docs/screenshots/01-lubot-home.png)
+
 ---
 
 ## What is LuBot and why I built it
@@ -19,6 +21,8 @@ Is it perfect? Not yet. I'm still developing it and it wont answer every questio
 LuBot is designed for profitable businesses. This is not a toy. You get real math and statistics delivered straight to you in the chat interface, or you can generate PDF reports with all the insights. You can build interactive charts, visualize your data flow, save those charts and share them with your partners.
 
 **Try it yourself at [lubot.ai](https://lubot.ai)** - upload your data and start asking questions.
+
+![Data Upload](docs/screenshots/02-data-upload.png)
 
 ### The self-learning system (this is the part nobody else has)
 
@@ -72,6 +76,10 @@ User asks a question
         v
  User gets their answer
 ```
+
+![Correlation Analysis - PhD level powered by Ultra 253B](docs/screenshots/03-correlation-analysis.png)
+
+![Heatmap Visualization](docs/screenshots/04-heatmap-visualization.png)
 
 The key idea: **not every question needs 253 billion parameters**. "How many employees do we have?" doesnt need a massive model. But "whats the correlation between marketing spend and customer retention across segments" - yeah, thats when you bring in the Ultra 253B. Use the right tool for the right job.
 
