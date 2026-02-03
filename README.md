@@ -1,11 +1,8 @@
-<table>
-  <tr>
-    <td><img src="docs/lubot-logo.png" alt="LuBot" height="45"></td>
-    <td align="center" width="100%"><img src="docs/nvidia-logo.png" alt="NVIDIA" height="55"></td>
-  </tr>
-</table>
+<img align="left" src="docs/lubot-logo.png" alt="LuBot" height="55">
 
-<h2 align="center">LuBot NVIDIA Routing</h2>
+<h2 align="center"><img src="docs/nvidia-logo.png" alt="NVIDIA" height="65"> Routing</h2>
+
+<br clear="both">
 
 <p align="center"><i>I built LuBot alone, from zero, over the last 8 months. This is the NVIDIA brain that powers it.</i></p>
 
@@ -221,5 +218,5 @@ intent, tier, conf = classifier.classify("Whats the correlation between age and 
 [MIT License](LICENSE)
 
 <p align="center">
-  <img src="docs/lubot-logo.png" alt="LuBot" height="30"> <strong><a href="https://lubot.ai">LuBot.ai</a></strong> - go try it. Powered by <img src="docs/nvidia-logo.png" alt="NVIDIA" height="20"> Nemotron.
+  <img src="docs/lubot-logo.png" alt="LuBot" height="40"> <strong><a href="https://lubot.ai">LuBot.ai</a></strong> - go try it. Powered by <img src="docs/nvidia-logo.png" alt="NVIDIA" height="28"> Nemotron.
 </p>
