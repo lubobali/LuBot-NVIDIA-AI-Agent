@@ -211,8 +211,6 @@ intent, tier, conf = classifier.classify("Whats the correlation between age and 
 
 ---
 
-MIT License
+[MIT License](LICENSE)
 
-**Built for the NVIDIA GTC 2026 Golden Ticket Contest**
-
-The full experience is at **[lubot.ai](https://lubot.ai)** - go try it. Powered by NVIDIA Nemotron.
+**[lubot.ai](https://lubot.ai)** - go try it. Powered by NVIDIA Nemotron.
