@@ -8,6 +8,8 @@
 
 <p align="center"><i>I built LuBot alone, from zero, over the last 8 months. This is the NVIDIA brain that powers it.</i></p>
 
+> **📺 [Watch the 4-minute demo video](https://REPLACE_WITH_VIDEO_LINK)** — Upload data, ask questions, get PhD-level analysis in seconds.
+
 **[lubot.ai](https://lubot.ai)** is live right now. Real users, real data, real NVIDIA API calls. Not a hackathon prototype.
 
 ![LuBot Home](docs/screenshots/01-lubot-home.png)
@@ -101,6 +103,18 @@ The key idea: **not every question needs 253 billion parameters**. "How many emp
 | **NIM API** | `integrate.api.nvidia.com/v1` | All inference goes through NVIDIA. OpenAI-compatible so integration was clean. |
 | **AdalFlow** | Framework | NVIDIA-optimized LLM orchestration. My LLMRouterClient adapts everything to work with it. |
 | **Nemotron-3-Nano-30B** | On-premise option | For enterprise deployments where data cant leave the network. |
+
+---
+
+## Infrastructure
+
+| Component | Technology |
+|-----------|------------|
+| **Server** | Hetzner Cloud US (Docker containers) |
+| **Hot Storage** | Neon PostgreSQL (34 tables, 450+ columns) |
+| **Cold Storage** | Backblaze B2 |
+| **Response Time** | 8-10 seconds (first query), 8 seconds (warm) |
+| **Batch Workers** | 22 daily cron jobs for self-learning |
 
 ---
 
