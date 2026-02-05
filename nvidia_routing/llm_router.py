@@ -59,12 +59,20 @@ class LLMRouter:
         self.nvidia_api_key = os.getenv("NVIDIA_API_KEY")
         self.groq_api_key = os.getenv("GROQ_API_KEY")
 
+        # Self-hosted NVIDIA RTX 4090 GPU (RunPod + Ollama)
+        self.gpu_server_url = os.getenv("GPU_SERVER_URL")
+        self.gpu_model_name = os.getenv("GPU_MODEL_NAME", "nemotron-mini")
+
         if not self.nvidia_api_key:
             logger.warning("NVIDIA_API_KEY not set - fallback will always be used")
         if not self.groq_api_key:
             logger.warning("GROQ_API_KEY not set - no fallback available")
+        if self.gpu_server_url:
+            logger.info(f"Self-hosted GPU: {self.gpu_server_url} (model: {self.gpu_model_name})")
+        else:
+            logger.info("GPU_SERVER_URL not set - using cloud API only")
 
-        logger.info("LLM Router initialized (NVIDIA primary, Groq fallback)")
+        logger.info("LLM Router initialized (GPU -> NVIDIA NIM -> Groq)")
 
     def chat_completion(
         self,
@@ -91,10 +99,25 @@ class LLMRouter:
         """
 
         # ================================================================
-        # STEP 1: TRY NVIDIA FIRST (happens EVERY request)
+        # STEP 0: TRY SELF-HOSTED GPU FIRST (Tier 1 only)
+        # Pattern: Edge computing - local GPU for speed, cloud for heavy lifting
+        # ================================================================
+        if tier == 1 and self.gpu_server_url:
+            logger.info(f"LLM Router: Trying self-hosted GPU ({self.gpu_model_name}) first...")
+
+            gpu_response = self._call_gpu(messages, max_tokens, temperature)
+
+            if gpu_response.success:
+                logger.info(f"GPU succeeded: {gpu_response.model} ({gpu_response.tokens_used} tokens)")
+                return gpu_response  # Fastest path! GPU on NVIDIA RTX 4090
+
+            logger.warning(f"GPU failed: {gpu_response.error} - falling through to NIM API")
+
+        # ================================================================
+        # STEP 1: TRY NVIDIA NIM API (cloud)
         # ================================================================
         model_name = "Nano 8B" if tier == 1 else "Ultra 253B"
-        logger.info(f"LLM Router: Trying NVIDIA {model_name} first...")
+        logger.info(f"LLM Router: Trying NVIDIA NIM {model_name}...")
 
         nvidia_response = self._call_nvidia(
             model=self.NANO_8B if tier == 1 else self.ULTRA_253B,
@@ -188,6 +211,50 @@ class LLMRouter:
 
         except Exception as e:
             error_msg = f"NVIDIA API call failed: {str(e)}"
+            logger.error(error_msg)
+            return LLMResponse(success=False, error=error_msg)
+
+    def _call_gpu(
+        self,
+        messages: List[Dict],
+        max_tokens: int,
+        temperature: float
+    ) -> LLMResponse:
+        """
+        Call self-hosted NVIDIA RTX 4090 GPU via Ollama (OpenAI-compatible).
+
+        Pattern: Edge inference - local GPU for latency-sensitive Tier 1 classification.
+        Ollama exposes /v1/chat/completions (same as NIM API).
+        """
+        try:
+            from openai import OpenAI
+
+            client = OpenAI(
+                base_url=f"{self.gpu_server_url}/v1",
+                api_key="ollama"  # Ollama doesn't require auth
+            )
+
+            response = client.chat.completions.create(
+                model=self.gpu_model_name,
+                messages=messages,
+                max_tokens=max_tokens,
+                temperature=temperature,
+                stream=False
+            )
+
+            content = response.choices[0].message.content
+            tokens_used = response.usage.total_tokens if response.usage else 0
+
+            return LLMResponse(
+                content=content,
+                model=f"gpu-{self.gpu_model_name}",
+                tokens_used=tokens_used,
+                success=True,
+                used_fallback=False
+            )
+
+        except Exception as e:
+            error_msg = f"GPU call failed: {str(e)}"
             logger.error(error_msg)
             return LLMResponse(success=False, error=error_msg)
 
