@@ -7,19 +7,21 @@
 <h2 align="center">LuBot NVIDIA Routing</h2>
 
 <p align="center">
-  <a href="https://REPLACE_WITH_VIDEO_LINK"><strong>📺 Watch 4-min Demo</strong></a> &nbsp;|&nbsp;
-  <a href="https://lubot.ai"><strong>🚀 Try Live</strong></a>
+  <a href="https://REPLACE_WITH_VIDEO_LINK"><img src="docs/youtube-icon.png" height="18"> <strong>Watch 4-min Demo</strong></a> &nbsp;|&nbsp;
+  <a href="https://lubot.ai"><img src="docs/lubot-logo.png" height="18"> <strong>Try Live</strong></a>
 </p>
 
-<p align="center"><i>I built LuBot alone, from zero, over the last 8 months. This is the NVIDIA brain that powers it.</i></p>
+<p align="center"><i>I built LuBot alone, from zero, over the last 8 months. 100% powered by NVIDIA — cloud APIs + self-hosted GPU.</i></p>
 
-**[lubot.ai](https://lubot.ai)** is live right now. Real users, real data, real NVIDIA API calls. Not a hackathon prototype.
+**[LuBot.ai](https://lubot.ai)** is live right now. Real business users. PhD-level statistical insights. A self-learning RAG system that gets smarter over time — finding patterns in your data that consultants charge thousands to discover.
+
+Real math. Real statistics. Best NVIDIA.
 
 ![LuBot Home](docs/screenshots/01-lubot-home.png)
 
 ---
 
-## **(A) TECHNICAL INNOVATION**
+## **TECHNICAL INNOVATION**
 
 ### The 4-Tier Intent Classification Cascade
 
@@ -64,18 +66,21 @@ One of the most unique features is that LuBot has a self-learning RAG system tha
 
 ---
 
-## **(B) EFFECTIVE USE OF NVIDIA TECHNOLOGY**
+## **EFFECTIVE USE OF NVIDIA TECHNOLOGY**
 
-| Technology | Model ID | Purpose |
-|------------|----------|---------|
-| **Nemotron Nano 8B** | `nvidia/llama-3.1-nemotron-nano-8b-v1` | Fast, handles most queries. Intent classification and simple analysis. |
-| **Nemotron Ultra 253B** | `nvidia/llama-3.1-nemotron-ultra-253b-v1` | The heavy hitter. 253B parameters for PhD-level statistical analysis when it actually matters. |
-| **NV-EmbedQA-E5-v5** | `nvidia/nv-embedqa-e5-v5` | 1024-dim embeddings for semantic intent matching. Replaced Microsoft MiniLM with this - better for Q&A. |
-| **NIM API** | `integrate.api.nvidia.com/v1` | All inference goes through NVIDIA. OpenAI-compatible so integration was clean. |
-| **AdalFlow** | Framework | NVIDIA-optimized LLM orchestration. My LLMRouterClient adapts everything to work with it. |
-| **Nemotron-3-Nano-30B** | On-premise option | For enterprise deployments where data cant leave the network. |
+| # | Technology | Model / Service | Purpose |
+|---|------------|-----------------|---------|
+| 1 | **Self-hosted GPU** | **NVIDIA RTX 4090** (24GB VRAM) | **Nemotron-mini** (2.7GB) + **Nemotron-3-Nano** (24GB) via Ollama |
+| 2 | **Nemotron Nano 8B** | **nvidia/llama-3.1-nemotron-nano-8b-v1** | Fast classification, intent detection, simple queries |
+| 3 | **Nemotron Ultra 253B** | **nvidia/llama-3.1-nemotron-ultra-253b-v1** | PhD-level statistical analysis (correlation, paradox) |
+| 4 | **NV-EmbedQA-E5-v5** | **nvidia/nv-embedqa-e5-v5** | 1024-dim semantic embeddings for intent matching |
+| 5 | **NIM API** | **integrate.api.nvidia.com/v1** | Cloud inference endpoint (OpenAI-compatible) |
+| 6 | **AdalFlow** | **Framework** | NVIDIA-optimized LLM orchestration |
+| 7 | **Nemotron-3-Nano-30B** | **nemotron-3-nano** (24GB local) | Enterprise on-premise deployment |
 
-**100% NVIDIA Inference** — Every single API call goes through NVIDIA NIM. Not a hybrid. Not "we use NVIDIA sometimes." Every request, every time. 99%+ success rate.
+**100% NVIDIA Stack** — Self-hosted RTX 4090 running Nemotron locally. NIM API delivering Nano 8B and Ultra 253B from the cloud. 1024-dim embeddings for semantic matching. 7 technologies. Every layer. Every request. 99%+ success rate.
+
+**Smart Model Routing** — 4-Tier Intent Classification + 3-Tier Response System. The right NVIDIA model for every query. Simple questions get Nano 8B. PhD analysis gets Ultra 253B. No wasted compute.
 
 **Batched Embeddings** — 125 canonical examples pre-computed in 4 batched API calls (not 125 individual calls). Startup time: 3 seconds instead of 27.
 
@@ -85,7 +90,7 @@ One of the most unique features is that LuBot has a self-learning RAG system tha
 
 ---
 
-## **(C) POTENTIAL IMPACT & USEFULNESS**
+## **POTENTIAL IMPACT & USEFULNESS**
 
 ### The Problem
 
@@ -109,7 +114,7 @@ LuBot never mixes user data. Never shares data between users. Everything is priv
 
 ---
 
-## **(D) QUALITY OF DOCUMENTATION & PRESENTATION**
+## **QUALITY OF DOCUMENTATION & PRESENTATION**
 
 ### Live Demo
 
