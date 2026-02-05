@@ -23,46 +23,62 @@ Real math. Real statistics. Best NVIDIA.
 
 ## **TECHNICAL INNOVATION**
 
-### The 4-Tier Intent Classification Cascade
+### The 4-Tier Intent Routing System
 
 Most AI apps send every user message to an LLM just to figure out what the user wants. Thats slow and expensive. I built a cascade that catches 95% of queries before any LLM is needed:
 
 ```
-User asks a question
-        |
-        v
- Intent Classifier (4 tiers - cheapest method first)
- |-- Tier 0: Keywords like "correlation", "HHI"   --> instant, 0ms, free
- |-- Tier 1: Regex patterns                        --> 80% of queries caught here
- |-- Tier 2: NVIDIA Embeddings (semantic match)    --> 5ms for ambiguous stuff
- |-- Tier 3: NVIDIA Nano 8B LLM                    --> only ~5% need this
-        |
-        v
- Response Tier Router
- |-- Simple ("how many employees?")     --> direct answer, skip the LLM
- |-- Medium ("revenue by region")       --> Nano 8B adds insight
- |-- PhD level ("correlation X vs Y")   --> Ultra 253B full statistical analysis
-        |
-        v
- LLM Router (Netflix-style failover)
- |-- NVIDIA first (every single request, always)
- |-- Groq fallback (only when NVIDIA is actually down, ~1% of time)
-        |
-        v
- User gets their answer
+Tier 0 - Deterministic Detection (0ms)
+|-- PhD Analysis, Correlation, Concentration, Anomaly, Web Search
+|-- Caught by keywords/regex instantly
+
+Tier 1 - Core Intents (80% of queries, 0ms)
+|-- GREETING, IDENTITY, DATA_QUERY, WEB_SEARCH, PREDICTION
+|-- DOCUMENT_GENERATION, MEMORY_RECALL, CAPABILITIES
+|-- Pattern matching - no AI needed
+
+Tier 2 - NVIDIA Embeddings (15% of queries, 5ms)
+|-- ADVICE_REQUEST, FOLLOWUP, CLARIFICATION, DEEP_DIVE
+|-- Semantic matching with NV-EmbedQA-E5-v5
+
+Tier 3 - NVIDIA LLM Fallback (5% of queries, 100ms)
+|-- Ambiguous queries, Complex multi-intent, Edge cases
+|-- Only these need Nemotron Nano 8B
 ```
 
-### Netflix-Style Failover
+### The 3-Tier Response System (Smart Model Routing)
 
-NVIDIA gets tried on every request. Its not "sometimes NVIDIA, sometimes Groq." NVIDIA is always primary. Groq is the safety net for infrastructure issues only. The fallback is smart - only triggers on timeouts and 503s, not on content errors that would fail the same way on Groq anyway.
+Routes queries to the optimal NVIDIA model based on complexity:
 
-### Response Tier Routing
+```
+Tier 0 - DIRECT (No LLM Needed, 0ms)
+|-- Simple aggregation: COUNT, SUM, AVG with 1 row result
+|-- Example: "How many employees?" → "You have 320 employees"
+|-- Templates only, no tokens used
 
-"How many employees do we have?" doesnt need 253 billion parameters. The system detects its a simple COUNT with 1 row and returns "You have 320 employees" directly. Only complex queries like correlation analysis get routed to Ultra 253B. Use the right tool for the right job.
+Tier 1 - ENHANCED (Nemotron Nano 8B, 50ms)
+|-- Medium complexity: GROUP BY with 2-10 rows, basic analysis
+|-- Example: "Revenue by department" → Table + "Sales is highest at $2M"
+|-- Fast, 50K tokens/sec
+
+Tier 2 - FULL PhD (Nemotron Ultra 253B, 500ms)
+|-- Statistical analysis OR >10 rows requiring deep insights
+|-- correlation, concentration, simpsons_paradox, outliers, trend
+|-- Example: "Correlation between sales and marketing?" → "Pearson r=0.95, p<0.001"
+|-- 253 billion parameters for real PhD-level analysis
+```
 
 ### Self-Learning RAG System
 
 One of the most unique features is that LuBot has a self-learning RAG system that retrieves insights from your interactions and data patterns that you cant see by eye. The more you use it, the more it remembers about your business, your preferences, your needs. Over time LuBot becomes your best partner that knows everything about your business. Plus 22 scheduled cron jobs running daily so it never misses important data.
+
+### Two Data Modes
+
+**My Data** — Upload CSV, Excel, or any structured data. Private storage with 10GB free.
+
+**LuBot Data** — Connect live data sources directly. Website analytics, database connections, API integrations. No manual uploads needed — your data flows in automatically and LuBot analyzes it in real-time.
+
+See [DATA_SCHEMA.md](docs/DATA_SCHEMA.md) for sample table structures.
 
 ---
 
