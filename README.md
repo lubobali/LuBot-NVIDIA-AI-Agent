@@ -148,10 +148,15 @@ git clone https://github.com/lubobali/LuBot-NVIDIA-AI-Agent.git
 cd LuBot-NVIDIA-AI-Agent
 pip install -r requirements.txt
 export NVIDIA_API_KEY="nvapi-your-key-here"  # free at https://build.nvidia.com
+
+# Optional: Self-hosted GPU (RunPod + Ollama)
+export GPU_SERVER_URL="http://your-runpod-ip:11434"
+export GPU_MODEL_NAME="nemotron-mini"  # or nemotron-3-nano for 30B
+
 python demo/quickstart.py
 ```
 
-The demo runs through all components - intent classification, response tier routing, and NVIDIA model calls. Even without an API key the intent classifier and response router work offline.
+The demo runs through all components - intent classification, response tier routing, and NVIDIA model calls. Even without an API key the intent classifier and response router work offline. With GPU_SERVER_URL set, Tier 1 queries route to your self-hosted NVIDIA GPU first.
 
 ### Code Examples
 
@@ -176,7 +181,15 @@ from nvidia_routing import get_llm_router
 
 router = get_llm_router()
 
-# NVIDIA first, always. Groq only if NVIDIA is actually down.
+# Full routing: GPU (self-hosted) → NVIDIA NIM API → Groq fallback
+# Tier 1: GPU first (if GPU_SERVER_URL set), then NIM Nano 8B
+response = router.chat_completion(
+    tier=1,
+    messages=[{"role": "user", "content": "Top 5 customers by revenue"}],
+)
+print(response.provider)  # "gpu" or "nvidia" or "groq"
+
+# Tier 2: Always NVIDIA NIM Ultra 253B (PhD-level analysis)
 response = router.chat_completion(
     tier=2,
     messages=[{"role": "user", "content": "Calculate HHI for this market"}],
