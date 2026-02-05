@@ -7,8 +7,8 @@
 <h2 align="center">LuBot NVIDIA Routing</h2>
 
 <p align="center">
-  <a href="https://REPLACE_WITH_VIDEO_LINK"><img src="docs/youtube-icon.png" height="18"> <strong>Watch 4-min Demo</strong></a> &nbsp;|&nbsp;
-  <a href="https://lubot.ai"><img src="docs/lubot-logo.png" height="18"> <strong>Try Live</strong></a>
+  <a href="https://REPLACE_WITH_VIDEO_LINK"><img src="docs/youtube-icon.png" height="30"> <strong>Watch 4-min Demo</strong></a> &nbsp;|&nbsp;
+  <a href="https://lubot.ai"><img src="docs/lubot-logo.png" height="30"> <strong>Try Live</strong></a>
 </p>
 
 <p align="center"><i>I built LuBot alone, from zero, over the last 8 months. 100% powered by NVIDIA — cloud APIs + self-hosted GPU.</i></p>
