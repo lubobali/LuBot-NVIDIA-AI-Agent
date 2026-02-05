@@ -70,13 +70,13 @@ One of the most unique features is that LuBot has a self-learning RAG system tha
 
 | # | Technology | Model / Service | Purpose |
 |---|------------|-----------------|---------|
-| 1 | **Self-hosted GPU** | **NVIDIA RTX 4090** (24GB VRAM) | **Nemotron-mini** (2.7GB) + **Nemotron-3-Nano** (24GB) via Ollama |
+| 1 | **Nemotron Ultra 253B** | **nvidia/llama-3.1-nemotron-ultra-253b-v1** | PhD-level statistical analysis (correlation, paradox) |
 | 2 | **Nemotron Nano 8B** | **nvidia/llama-3.1-nemotron-nano-8b-v1** | Fast classification, intent detection, simple queries |
-| 3 | **Nemotron Ultra 253B** | **nvidia/llama-3.1-nemotron-ultra-253b-v1** | PhD-level statistical analysis (correlation, paradox) |
-| 4 | **NV-EmbedQA-E5-v5** | **nvidia/nv-embedqa-e5-v5** | 1024-dim semantic embeddings for intent matching |
-| 5 | **NIM API** | **integrate.api.nvidia.com/v1** | Cloud inference endpoint (OpenAI-compatible) |
-| 6 | **AdalFlow** | **Framework** | NVIDIA-optimized LLM orchestration |
-| 7 | **Nemotron-3-Nano-30B** | **nemotron-3-nano** (24GB local) | Enterprise on-premise deployment |
+| 3 | **NV-EmbedQA-E5-v5** | **nvidia/nv-embedqa-e5-v5** | 1024-dim semantic embeddings for intent matching |
+| 4 | **NIM API** | **integrate.api.nvidia.com/v1** | Cloud inference endpoint (OpenAI-compatible) |
+| 5 | **Self-hosted GPU** | **NVIDIA RTX 4090** (24GB VRAM) | **Nemotron-mini** (2.7GB) + **Nemotron-3-Nano** (24GB) via Ollama |
+| 6 | **Nemotron-3-Nano-30B** | **nemotron-3-nano** (24GB local) | Enterprise on-premise deployment |
+| 7 | **AdalFlow** | **Framework** | NVIDIA-optimized LLM orchestration |
 
 **100% NVIDIA Stack** — Self-hosted RTX 4090 running Nemotron locally. NIM API delivering Nano 8B and Ultra 253B from the cloud. 1024-dim embeddings for semantic matching. 7 technologies. Every layer. Every request. 99%+ success rate.
 
@@ -130,12 +130,14 @@ Upload a CSV or Excel file, ask questions about your data, and watch it route th
 
 | Metric | Value |
 |--------|-------|
-| **Codebase** | 112,000+ lines (this repo is ~2,500) |
-| **NVIDIA Success Rate** | 99%+ |
-| **Response Time** | 8-10 seconds (first query), 8 seconds (warm) |
+| **Codebase** | 112,270 lines of code |
+| **Python Files** | 248 files |
+| **AI Tools** | 28 tools (SQL, charts, PhD analysis, RAG, predictions) |
 | **Database** | 34 tables, 450+ columns (Neon hot + B2 cold storage) |
 | **API Endpoints** | 40+ (FastAPI) |
-| **Batch Workers** | 22 daily cron jobs for learning |
+| **Batch Workers** | 22 daily cron jobs for self-learning |
+| **NVIDIA Success Rate** | 99%+ |
+| **Response Time** | 8-10 seconds (first query), 8 seconds (warm) |
 | **Infrastructure** | Hetzner Cloud US, Docker, Neon PostgreSQL, Backblaze B2 |
 | **Built By** | One person. 8 months. Still going. |
 
