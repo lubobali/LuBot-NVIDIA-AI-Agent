@@ -76,7 +76,7 @@ One of the most unique features is that LuBot has a self-learning RAG system tha
 
 **My Data** — Upload CSV, Excel, or any structured data. Private storage with 10GB free.
 
-**LuBot Data** — Connect live data sources directly. Website analytics, database connections, API integrations. No manual uploads needed — your data flows in automatically and LuBot analyzes it in real-time.
+**LuBot Data** — Connect live data sources directly. The demo includes real traffic data from my personal portfolio website [LuboBali.com](https://LuboBali.com) — live visitors, page views, time on page, referrers. This demonstrates how LuBot can connect to any other business website to analyze live data automatically. No manual uploads needed.
 
 See [DATA_SCHEMA.md](docs/DATA_SCHEMA.md) for sample table structures.
 
