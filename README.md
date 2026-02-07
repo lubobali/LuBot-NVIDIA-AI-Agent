@@ -74,9 +74,9 @@ One of the most unique features is that LuBot has a self-learning RAG system tha
 
 ### Two Data Modes
 
-**My Data** — Upload CSV, Excel, or any structured data. Private storage with 10GB free.
+**My Files** — Upload CSV, Excel, PDF, or any structured data. Private storage with 10GB free. Document QA powered by Ultra 253B + FAISS vector search.
 
-**LuBot Data** — Connect live data sources directly. The demo includes real traffic data from my personal portfolio website [LuboBali.com](https://LuboBali.com) — live visitors, page views, time on page, referrers. This demonstrates how LuBot can connect to any other business website to analyze live data automatically. No manual uploads needed.
+**Website Data** — Connect live data sources directly. The demo includes real traffic data from my personal portfolio website [LuboBali.com](https://LuboBali.com) — live visitors, page views, time on page, referrers. This demonstrates how LuBot can connect to any other business website to analyze live data automatically. No manual uploads needed.
 
 See [DATA_SCHEMA.md](docs/DATA_SCHEMA.md) for sample table structures.
 
@@ -86,15 +86,16 @@ See [DATA_SCHEMA.md](docs/DATA_SCHEMA.md) for sample table structures.
 
 | # | Technology | Model / Service | Purpose |
 |---|------------|-----------------|---------|
-| 1 | **Nemotron Ultra 253B** | **nvidia/llama-3.1-nemotron-ultra-253b-v1** | PhD-level statistical analysis (correlation, paradox) |
-| 2 | **Nemotron Nano 8B** | **nvidia/llama-3.1-nemotron-nano-8b-v1** | Fast classification, intent detection, simple queries |
-| 3 | **NV-EmbedQA-E5-v5** | **nvidia/nv-embedqa-e5-v5** | 1024-dim semantic embeddings for intent matching |
-| 4 | **NIM API** | **integrate.api.nvidia.com/v1** | Cloud inference endpoint (OpenAI-compatible) |
-| 5 | **Self-hosted GPU** | **NVIDIA RTX 4090** (24GB VRAM) | **Nemotron-mini** (2.7GB) + **Nemotron-3-Nano** (24GB) via Ollama |
-| 6 | **Nemotron-3-Nano-30B** | **nemotron-3-nano** (24GB local) | Enterprise on-premise deployment |
-| 7 | **AdalFlow** | **Framework** | NVIDIA-optimized LLM orchestration |
+| 1 | **Nemotron Ultra 253B** | **nvidia/llama-3.1-nemotron-ultra-253b-v1** | Intent routing, query enrichment, Document QA, PhD-level analysis |
+| 2 | **Nemotron Nano 8B** | **nvidia/llama-3.1-nemotron-nano-8b-v1** | Code generation, fast analytics, simple queries |
+| 3 | **Nemotron Vision 12B VL** | **nvidia/nemotron-nano-12b-v2-vl** | Image & screenshot analysis, multi-modal understanding |
+| 4 | **NV-EmbedQA-E5-v5** | **nvidia/nv-embedqa-e5-v5** | 1024-dim semantic embeddings for intent matching |
+| 5 | **NIM API** | **integrate.api.nvidia.com/v1** | Cloud inference endpoint (OpenAI-compatible) |
+| 6 | **Self-hosted GPU** | **NVIDIA RTX 4090** (24GB VRAM) | **Nemotron-mini** (2.7GB) + **Nemotron-3-Nano** (24GB) via Ollama |
+| 7 | **Nemotron-3-Nano-30B** | **nemotron-3-nano** (24GB local) | Enterprise on-premise deployment |
+| 8 | **AdalFlow** | **Framework** | LLM orchestration framework |
 
-**100% NVIDIA Stack** — Self-hosted RTX 4090 running Nemotron locally. NIM API delivering Nano 8B and Ultra 253B from the cloud. 1024-dim embeddings for semantic matching. 7 technologies. Every layer. Every request. 99%+ success rate.
+**100% NVIDIA Stack** — Self-hosted RTX 4090 running Nemotron locally. NIM API delivering Nano 8B, Ultra 253B, and Vision 12B from the cloud. 6 NVIDIA models + 1024-dim embeddings for semantic matching. 8 technologies. Every layer. Every request. 99%+ success rate.
 
 **Smart Model Routing** — 4-Tier Intent Classification + 3-Tier Response System. The right NVIDIA model for every query. Simple questions get Nano 8B. PhD analysis gets Ultra 253B. No wasted compute.
 
@@ -154,7 +155,8 @@ Upload a CSV or Excel file, ask questions about your data, and watch it route th
 | **Batch Workers** | 22 daily cron jobs for self-learning |
 | **NVIDIA Success Rate** | 99%+ |
 | **Response Time** | 8-10 seconds (first query), 8 seconds (warm) |
-| **Infrastructure** | Hetzner Cloud US, Docker, Neon PostgreSQL, Backblaze B2 |
+| **NVIDIA Models** | 6 (Ultra 253B, Nano 8B, Vision 12B VL, NV-EmbedQA-E5-v5, Nemotron-3-Nano 30B, Nemotron-mini 2.7B) |
+| **Infrastructure** | Hetzner Cloud US, Docker, Neon PostgreSQL, Backblaze B2, RTX 4090 |
 | **Built By** | One person. 8 months. Still going. |
 
 ### Quick Start
