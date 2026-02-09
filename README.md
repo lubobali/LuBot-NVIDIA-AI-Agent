@@ -23,9 +23,9 @@ Real math. Real statistics. Best NVIDIA.
 
 ## **TECHNICAL INNOVATION**
 
-### The 4-Tier Intent Routing System
+### The LuBot Cascade — 4-Tier Intent Routing
 
-Most AI apps send every user message to an LLM just to figure out what the user wants. Thats slow and expensive. I built a cascade that catches 95% of queries before any LLM is needed:
+The idea came from a simple instinct: if the agent can figure out what the user wants without calling an LLM, it should. Most AI apps send every user message to an LLM just to figure out what the user wants. Thats slow and expensive. I built a 4-stage cascade that tries the cheapest method first and only escalates when needed — 95% of routing decisions cost zero LLM tokens:
 
 ```
 Tier 0 - Deterministic Detection (0ms)
@@ -45,6 +45,8 @@ Tier 3 - NVIDIA LLM Fallback (5% of queries, 100ms)
 |-- Ambiguous queries, Complex multi-intent, Edge cases
 |-- Only these need Nemotron Nano 8B
 ```
+
+**Note:** The LuBot Cascade saves LLM calls for the routing decision only. The actual analysis and response generation still uses NVIDIA Nemotron models (Nano 8B or Ultra 253B depending on complexity).
 
 ### The 3-Tier Response System (Smart Model Routing)
 
