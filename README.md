@@ -72,6 +72,25 @@ Tier 2 - FULL PhD (Nemotron Ultra 253B, 500ms)
 
 One of the most unique features is that LuBot has a self-learning RAG system that retrieves insights from your interactions and data patterns that you cant see by eye. The more you use it, the more it remembers about your business, your preferences, your needs. Over time LuBot becomes your best partner that knows everything about your business. Plus 17 batch workers running every night so it never misses important data.
 
+### RAG & Embedding Pipeline — NVIDIA NV-EmbedQA-E5-V5
+
+Every vector operation in LuBot is powered by **NVIDIA NV-EmbedQA-E5-V5** — a 1024-dimensional semantic embedding model with 335M parameters.
+
+```
+Text Input → NVIDIA Embed (1024-dim Vector) → FAISS Index → Retrieved Context (Top-K) → Augmented LLM → Grounded Response
+```
+
+**6 Embedding-Powered Features:**
+
+| Feature | How It Works |
+|---------|-------------|
+| **Document RAG** | Uploaded files chunked & embedded into 1024-dim vectors. FAISS retrieves relevant passages to ground LLM responses in real data. |
+| **Tier 2 Intent Matching** | User queries embedded & compared via cosine similarity to known intent vectors. Semantic routing without LLM calls. |
+| **Conversation Embeddings** | Every conversation indexed as vectors. Enables semantic memory search across all past interactions. |
+| **Semantic Clustering** | Nightly batch worker groups similar queries by vector proximity. Discovers usage patterns automatically. |
+| **Few-Shot RAG Learning** | Retrieves similar past Q&A pairs as few-shot examples. Response quality improves with every conversation. |
+| **FAISS Vector Search** | Facebook AI Similarity Search engine. Sub-millisecond approximate nearest neighbor across all vector indexes. |
+
 ### Two Data Modes
 
 **My Files** — Upload CSV, Excel, PDF, or any structured data. Private storage with 10GB free. Document QA powered by Ultra 253B + FAISS vector search.
