@@ -102,6 +102,9 @@ class NVIDIAClient:
             )
 
             content = response.choices[0].message.content
+            # Ultra 253B is a thinking model — content can be None if thinking used all tokens
+            if content is None:
+                content = getattr(response.choices[0].message, 'reasoning_content', '') or ''
             tokens_used = response.usage.total_tokens if response.usage else 0
 
             logger.info(f"NVIDIA {model}: {tokens_used} tokens")

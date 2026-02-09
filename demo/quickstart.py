@@ -85,7 +85,10 @@ def demo_llm_router():
     print("\n--- Tier 2 (Ultra 253B): PhD-level analysis ---")
     response = router.chat_completion(
         tier=2,
-        messages=[{"role": "user", "content": "Explain Simpson's Paradox with a concrete business example where aggregate data shows one trend but segmented data reveals the opposite."}],
+        messages=[
+            {"role": "system", "content": "detailed thinking off"},
+            {"role": "user", "content": "Explain Simpson's Paradox with a concrete business example where aggregate data shows one trend but segmented data reveals the opposite."}
+        ],
         max_tokens=300
     )
     print(f"Model: {response.model}")
