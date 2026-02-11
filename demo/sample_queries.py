@@ -103,7 +103,7 @@ def main():
 
     Production Scale (LuBot at lubot.ai):
       112,000+ lines of code | 34 database tables | 40+ API endpoints
-      22 batch workers | 99%+ NVIDIA success rate | <200ms P95 latency
+      17 batch workers | 99%+ NVIDIA success rate | <200ms P95 latency
     """)
 
 
