@@ -162,7 +162,7 @@ Upload a CSV or Excel file, ask questions about your data, and watch it route th
 
 ### Video Walkthrough
 
-**[📺 Watch the 4-minute demo video](https://REPLACE_WITH_VIDEO_LINK)** — Full feature demonstration
+**[📺 Watch 10-min Demo](https://www.youtube.com/watch?v=nlpFFY1MidE)** — Full feature demonstration
 
 ### Production Numbers
 
