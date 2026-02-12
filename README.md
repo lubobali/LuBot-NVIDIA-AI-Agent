@@ -7,7 +7,7 @@
 <h2 align="center">LuBot NVIDIA Routing</h2>
 
 <p align="center">
-  <a href="https://REPLACE_WITH_VIDEO_LINK"><img src="docs/youtube-icon.png" height="30"> <strong>Watch 4-min Demo</strong></a> &nbsp;|&nbsp;
+  <a href="https://www.youtube.com/watch?v=nlpFFY1MidE"><img src="docs/youtube-icon.png" height="30"> <strong>Watch 10-min Demo</strong></a> &nbsp;|&nbsp;
   <a href="https://lubot.ai"><img src="docs/lubot-logo.png" height="30"> <strong>Try Live</strong></a>
 </p>
 
