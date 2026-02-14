@@ -249,20 +249,32 @@ intent, tier, conf = classifier.classify("Whats the correlation between age and 
 ### Files in This Repo
 
 ```
-nvidia_routing/
-  llm_router.py            - Main router. NVIDIA primary, Groq fallback, smart error handling.
-  nvidia_client.py         - Clean NVIDIA API wrapper. Pick a model, send messages, get response.
-  nvidia_embeddings.py     - NVIDIA embeddings. SentenceTransformer-compatible drop-in.
-  llm_router_client.py     - Adapter that makes the router work with AdalFlow Generator.
-  response_tier_router.py  - Decides: direct answer vs enhanced vs full PhD analysis.
+intelligence/                  — PhD-Level Analysis Engine (6,235 lines)
+  __init__.py                  - Facade composing all 9 analyzers into unified engine
+  paradox.py                   - Simpson's Paradox detection. Mix/rate decomposition.
+  drivers.py                   - McKinsey-style driver analysis. Shapley attribution.
+  concentration.py             - HHI concentration risk (DOJ/FTC regulatory standard)
+  correlation.py               - Lagged correlation, leading indicator detection
+  anomaly.py                   - Anomaly detection against learned baselines
+  statistical.py               - Mann-Kendall trend test, Welch's t-test, power analysis
 
-intent_routing/
-  intent_classifier.py     - The 4-tier classification cascade. Brains of the routing.
-  correlation_detector.py  - Deterministic PhD query detection. Keywords before LLM, always.
+storage/                       — Hot/Cold Storage Architecture
+  data_warmer.py               - Neon (hot) ↔ Backblaze B2 (cold) data lifecycle
+
+nvidia_routing/                — NVIDIA Model Integration
+  llm_router.py                - Main router. NVIDIA primary, Groq fallback, smart error handling.
+  nvidia_client.py             - Clean NVIDIA API wrapper. Pick a model, send messages, get response.
+  nvidia_embeddings.py         - NVIDIA embeddings. SentenceTransformer-compatible drop-in.
+  llm_router_client.py         - Adapter that makes the router work with AdalFlow Generator.
+  response_tier_router.py      - Decides: direct answer vs enhanced vs full PhD analysis.
+
+intent_routing/                — The LuBot Cascade
+  intent_classifier.py         - The 4-tier classification cascade. Brains of the routing.
+  correlation_detector.py      - Deterministic PhD query detection. Keywords before LLM, always.
 
 demo/
-  quickstart.py            - Run this first. All components working together.
-  sample_queries.py        - 15 queries showing how routing decisions get made.
+  quickstart.py                - Run this first. All components working together.
+  sample_queries.py            - 15 queries showing how routing decisions get made.
 ```
 
 ---
