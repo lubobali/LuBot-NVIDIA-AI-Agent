@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The LuBot Cascade — 4-Tier Intent Routing</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0f;
+    color: #e0e0e0;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Split layout */
+  .top-panel {
+    flex-shrink: 0;
+    overflow: hidden;
+    border-bottom: 1px solid #1a1a25;
+    background: #0a0a0f;
+    z-index: 20;
+  }
+
+  .bottom-panel {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+    background: #08080d;
+  }
+
+  .bottom-panel::-webkit-scrollbar { width: 4px; }
+  .bottom-panel::-webkit-scrollbar-track { background: #0a0a0f; }
+  .bottom-panel::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+  .header {
+    text-align: center;
+    padding: 40px 20px 20px;
+  }
+
+  .header h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #76b900, #00d4aa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+
+  .header .subtitle {
+    font-size: 1.1rem;
+    color: #888;
+    font-weight: 300;
+  }
+
+  .header .highlight {
+    color: #76b900;
+    font-weight: 600;
+  }
+
+  /* Main cascade container */
+  .cascade-container {
+    max-width: 100%;
+    margin: 20px auto;
+    padding: 0 24px;
+    position: relative;
+  }
+
+  /* The vertical flow line — hidden, using left-border instead */
+  .flow-line { display: none; }
+
+  /* Tier blocks */
+  .tier {
+    position: relative;
+    margin-bottom: 12px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease;
+  }
+
+  .tier.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .tier-card {
+    background: #12121a;
+    border: 1px solid #1a1a25;
+    border-left: 3px solid #333;
+    border-radius: 8px;
+    padding: 16px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tier-card::before { display: none; }
+
+  .tier-0 .tier-card { border-left-color: #76b900; }
+  .tier-1 .tier-card { border-left-color: #00d4aa; }
+  .tier-2 .tier-card { border-left-color: #0088ff; }
+  .tier-3 .tier-card { border-left-color: #ff6600; }
+
+  .tier-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .tier-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .tier-0 .tier-name { color: #76b900; }
+  .tier-1 .tier-name { color: #00d4aa; }
+  .tier-2 .tier-name { color: #0088ff; }
+  .tier-3 .tier-name { color: #ff6600; }
+
+  .tier-stats {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .stat-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .tier-0 .stat-badge { background: rgba(118,185,0,0.15); color: #76b900; }
+  .tier-1 .stat-badge { background: rgba(0,212,170,0.15); color: #00d4aa; }
+  .tier-2 .stat-badge { background: rgba(0,136,255,0.15); color: #0088ff; }
+  .tier-3 .stat-badge { background: rgba(255,102,0,0.15); color: #ff6600; }
+
+  .tier-desc {
+    font-size: 0.82rem;
+    color: #777;
+    line-height: 1.4;
+    margin-bottom: 10px;
+  }
+
+  .tier-intents {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .intent-tag {
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #ccc;
+  }
+
+  /* Catch percentage bar */
+  .catch-bar-container {
+    margin-top: 14px;
+    position: relative;
+  }
+
+  .catch-bar-bg {
+    height: 6px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .catch-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    width: 0%;
+    transition: width 1.5s ease;
+  }
+
+  .tier-0 .catch-bar-fill { background: linear-gradient(90deg, #76b900, #8fd400); }
+  .tier-1 .catch-bar-fill { background: linear-gradient(90deg, #00d4aa, #00e6b8); }
+  .tier-2 .catch-bar-fill { background: linear-gradient(90deg, #0088ff, #00aaff); }
+  .tier-3 .catch-bar-fill { background: linear-gradient(90deg, #ff6600, #ff8833); }
+
+  .catch-label {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 6px;
+    text-align: right;
+  }
+
+  .catch-label span {
+    font-weight: 700;
+  }
+
+  .tier-0 .catch-label span { color: #76b900; }
+  .tier-1 .catch-label span { color: #00d4aa; }
+  .tier-2 .catch-label span { color: #0088ff; }
+  .tier-3 .catch-label span { color: #ff6600; }
+
+  /* Arrow between tiers */
+  .tier-arrow {
+    text-align: center;
+    padding: 4px 0;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.4s ease;
+  }
+
+  .tier-arrow.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .tier-arrow .arrow-text {
+    font-size: 0.75rem;
+    color: #555;
+    font-weight: 500;
+  }
+
+  .tier-arrow svg {
+    display: block;
+    margin: 4px auto;
+  }
+
+  /* Query simulator */
+  .simulator {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+
+  .simulator-title {
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #76b900;
+  }
+
+  .query-input-area {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .query-input {
+    flex: 1;
+    background: #12121a;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 14px 18px;
+    color: #e0e0e0;
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  .query-input:focus {
+    border-color: #76b900;
+  }
+
+  .query-input::placeholder {
+    color: #555;
+  }
+
+  .route-btn {
+    background: linear-gradient(135deg, #76b900, #5a9400);
+    border: none;
+    border-radius: 12px;
+    padding: 14px 28px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .route-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(118,185,0,0.3);
+  }
+
+  /* Live routing animation */
+  .routing-display {
+    background: #12121a;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 14px 20px;
+    min-height: 80px;
+  }
+
+  .route-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.4s ease;
+  }
+
+  .route-step.active {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .step-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .step-icon.pass { background: rgba(255,255,255,0.05); color: #555; }
+  .step-icon.catch-0 { background: rgba(118,185,0,0.2); color: #76b900; }
+  .step-icon.catch-1 { background: rgba(0,212,170,0.2); color: #00d4aa; }
+  .step-icon.catch-2 { background: rgba(0,136,255,0.2); color: #0088ff; }
+  .step-icon.catch-3 { background: rgba(255,102,0,0.2); color: #ff6600; }
+
+  .step-text { font-size: 0.9rem; color: #999; }
+  .step-text.caught { font-weight: 600; }
+  .step-text.caught-0 { color: #76b900; }
+  .step-text.caught-1 { color: #00d4aa; }
+  .step-text.caught-2 { color: #0088ff; }
+  .step-text.caught-3 { color: #ff6600; }
+
+  .step-time {
+    margin-left: auto;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #444;
+  }
+
+  /* Result banner */
+  .result-banner {
+    margin-top: 8px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    display: none;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .result-banner.show { display: flex; }
+  .result-banner.tier-0-result { background: rgba(118,185,0,0.1); border: 1px solid rgba(118,185,0,0.3); }
+  .result-banner.tier-1-result { background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.3); }
+  .result-banner.tier-2-result { background: rgba(0,136,255,0.1); border: 1px solid rgba(0,136,255,0.3); }
+  .result-banner.tier-3-result { background: rgba(255,102,0,0.1); border: 1px solid rgba(255,102,0,0.3); }
+
+  .result-intent {
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .result-tokens {
+    margin-left: auto;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .tier-0-result .result-intent, .tier-0-result .result-tokens { color: #76b900; }
+  .tier-1-result .result-intent, .tier-1-result .result-tokens { color: #00d4aa; }
+  .tier-2-result .result-intent, .tier-2-result .result-tokens { color: #0088ff; }
+  .tier-3-result .result-intent, .tier-3-result .result-tokens { color: #ff6600; }
+
+  /* Preset queries */
+  .presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+
+  .preset-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #333;
+    background: rgba(255,255,255,0.03);
+    color: #888;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .preset-btn:hover {
+    border-color: #76b900;
+    color: #76b900;
+    background: rgba(118,185,0,0.05);
+  }
+
+  /* Stats counter */
+  .stats-bar {
+    max-width: 900px;
+    margin: 40px auto 20px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #76b900, #00d4aa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 4px;
+  }
+
+  /* Auto-play indicator */
+  .autoplay-bar {
+    max-width: 900px;
+    margin: 10px auto 30px;
+    padding: 0 20px;
+    text-align: center;
+  }
+
+  .autoplay-toggle {
+    padding: 10px 24px;
+    border-radius: 24px;
+    border: 1px solid #333;
+    background: rgba(118,185,0,0.05);
+    color: #76b900;
+    font-size: 0.92rem;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .autoplay-toggle:hover {
+    background: rgba(118,185,0,0.15);
+  }
+
+  .autoplay-toggle.active {
+    background: rgba(118,185,0,0.2);
+    border-color: #76b900;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: #444;
+    font-size: 0.85rem;
+  }
+
+  .footer a {
+    color: #76b900;
+    text-decoration: none;
+  }
+
+  .nvidia-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: rgba(118,185,0,0.08);
+    border: 1px solid rgba(118,185,0,0.2);
+    font-size: 0.8rem;
+    color: #76b900;
+    font-weight: 600;
+  }
+
+  /* Glow pulse on catch */
+  @keyframes glowPulse0 {
+    0% { box-shadow: 0 0 0 0 rgba(118,185,0,0.4); }
+    70% { box-shadow: 0 0 20px 10px rgba(118,185,0,0); }
+    100% { box-shadow: 0 0 0 0 rgba(118,185,0,0); }
+  }
+  @keyframes glowPulse1 {
+    0% { box-shadow: 0 0 0 0 rgba(0,212,170,0.4); }
+    70% { box-shadow: 0 0 20px 10px rgba(0,212,170,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,212,170,0); }
+  }
+  @keyframes glowPulse2 {
+    0% { box-shadow: 0 0 0 0 rgba(0,136,255,0.4); }
+    70% { box-shadow: 0 0 20px 10px rgba(0,136,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,136,255,0); }
+  }
+  @keyframes glowPulse3 {
+    0% { box-shadow: 0 0 0 0 rgba(255,102,0,0.4); }
+    70% { box-shadow: 0 0 20px 10px rgba(255,102,0,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,102,0,0); }
+  }
+
+  .tier-card.glow-0 { animation: glowPulse0 0.8s ease-out; border-color: #76b900 !important; border-left-color: #76b900 !important; }
+  .tier-card.glow-1 { animation: glowPulse1 0.8s ease-out; border-color: #00d4aa !important; border-left-color: #00d4aa !important; }
+  .tier-card.glow-2 { animation: glowPulse2 0.8s ease-out; border-color: #0088ff !important; border-left-color: #0088ff !important; }
+  .tier-card.glow-3 { animation: glowPulse3 0.8s ease-out; border-color: #ff6600 !important; border-left-color: #ff6600 !important; }
+
+  /* Typing cursor */
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+  .query-input.typing { caret-color: #76b900; }
+
+  /* Counter pulse */
+  @keyframes counterPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+  .stat-number.pop { animation: counterPop 0.3s ease; }
+
+  /* Scanning line on routing display */
+  @keyframes scanLine {
+    0% { top: 0; opacity: 0.6; }
+    100% { top: 100%; opacity: 0; }
+  }
+  .routing-display.scanning::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #76b900, transparent);
+    animation: scanLine 1.5s ease-out;
+    pointer-events: none;
+  }
+  .routing-display { position: relative; overflow: hidden; }
+
+  /* Traveling dot animation through tier cards */
+  .cascade-container { position: relative; }
+
+  .travel-dot {
+    position: absolute;
+    left: -2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #76b900;
+    box-shadow: 0 0 16px 6px rgba(118,185,0,0.5);
+    z-index: 10;
+    opacity: 0;
+    transition: none;
+    pointer-events: none;
+  }
+
+  .travel-dot.active {
+    opacity: 1;
+  }
+
+  .travel-dot.tier-0-dot { background: #76b900; box-shadow: 0 0 20px 8px rgba(118,185,0,0.5); }
+  .travel-dot.tier-1-dot { background: #00d4aa; box-shadow: 0 0 20px 8px rgba(0,212,170,0.5); }
+  .travel-dot.tier-2-dot { background: #0088ff; box-shadow: 0 0 20px 8px rgba(0,136,255,0.5); }
+  .travel-dot.tier-3-dot { background: #ff6600; box-shadow: 0 0 20px 8px rgba(255,102,0,0.5); }
+
+  /* Query text floating above cascade */
+  .floating-query {
+    position: absolute;
+    left: 20px;
+    background: rgba(10,10,15,0.95);
+    border: 1px solid #76b900;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    color: #76b900;
+    white-space: nowrap;
+    max-width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    z-index: 11;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 0 12px rgba(118,185,0,0.3);
+  }
+
+  .floating-query.active { opacity: 1; }
+
+  /* Savings counter */
+  .savings-bar {
+    max-width: 100%;
+    margin: 0 auto 10px;
+    padding: 0 24px;
+    text-align: center;
+  }
+
+  .savings-text {
+    font-size: 0.85rem;
+    color: #555;
+  }
+
+  .savings-text .saved-num {
+    color: #76b900;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  /* Top banner — same as architecture.html */
+  .arch-banner {
+    text-align: center;
+    padding: 28px 20px 20px;
+    background: linear-gradient(135deg, #76b900 0%, #00d4aa 100%);
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 6px 30px rgba(118, 185, 0, 0.25);
+    position: relative;
+  }
+  .arch-banner .banner-logos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    top: 16px;
+    left: 24px;
+    right: 24px;
+  }
+  .arch-banner .banner-logo-left { height: 50px; width: auto; }
+  .arch-banner .banner-logo-right { height: 40px; width: auto; }
+  .arch-banner h2 {
+    font-size: 1.8rem;
+    color: #000;
+    margin-top: 30px;
+    margin-bottom: 4px;
+    font-weight: 800;
+  }
+  .arch-banner .banner-sub {
+    font-size: 0.95rem;
+    color: #1a1a2e;
+  }
+</style>
+</head>
+<body>
+
+<div class="top-panel">
+
+<div class="arch-banner">
+  <div class="banner-logos">
+    <img src="https://lubot.ai/logo.png" alt="LuBot" class="banner-logo-left">
+    <img src="https://lubot.ai/nvidia-logo-horz.png" alt="NVIDIA" class="banner-logo-right">
+  </div>
+  <h2>The LuBot Cascade</h2>
+  <div class="banner-sub">4-Tier Intent Routing — 95% of decisions cost zero LLM tokens</div>
+</div>
+
+<div class="stats-bar" style="margin:10px auto 8px;gap:30px;">
+  <div class="stat-item">
+    <div class="stat-number" id="counter-routed">0</div>
+    <div class="stat-label">Queries Routed</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number" id="counter-saved">0</div>
+    <div class="stat-label">Zero-Token Decisions</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number" id="counter-pct">0%</div>
+    <div class="stat-label">Token-Free Rate</div>
+  </div>
+</div>
+
+<!-- Interactive Simulator — TOP -->
+<div class="simulator" style="margin-top:4px;margin-bottom:0;padding-bottom:0;">
+  <div class="simulator-title" style="font-size:1.1rem;margin-bottom:12px;">Watch the Cascade Route a Query</div>
+
+  <div class="presets">
+    <button class="preset-btn" onclick="simulateQuery('What is the correlation between sales and marketing?')">correlation query</button>
+    <button class="preset-btn" onclick="simulateQuery('hello')">greeting</button>
+    <button class="preset-btn" onclick="simulateQuery('show me revenue by department')">data query</button>
+    <button class="preset-btn" onclick="simulateQuery('what can you do?')">capabilities</button>
+    <button class="preset-btn" onclick="simulateQuery('can you explain that further?')">follow-up</button>
+    <button class="preset-btn" onclick="simulateQuery('why did profits drop last quarter despite higher volume?')">complex reasoning</button>
+    <button class="preset-btn" onclick="simulateQuery('search for NVIDIA stock price')">web search</button>
+    <button class="preset-btn" onclick="simulateQuery('is there a Simpsons Paradox in my data?')">PhD analysis</button>
+    <button class="preset-btn" onclick="simulateQuery('what is the HHI concentration of our customer base?')">concentration risk</button>
+    <button class="preset-btn" onclick="simulateQuery('average salary by department')">aggregation</button>
+    <button class="preset-btn" onclick="simulateQuery('if we cut marketing by 20% what happens to customer acquisition?')">what-if scenario</button>
+    <button class="preset-btn" onclick="simulateQuery('break down the root cause of churn in enterprise segment')">root cause</button>
+    <button class="preset-btn" onclick="simulateQuery('who are you?')">identity</button>
+    <button class="preset-btn" onclick="simulateQuery('show me anomalies in expenses')">anomaly</button>
+    <button class="preset-btn" onclick="simulateQuery('predict next quarter sales')">forecast</button>
+  </div>
+
+  <div class="query-input-area">
+    <input type="text" class="query-input" id="queryInput" placeholder="Type any query and watch the Cascade route it..." onkeydown="if(event.key==='Enter')simulateFromInput()">
+    <button class="route-btn" onclick="simulateFromInput()">Route →</button>
+  </div>
+
+  <div class="routing-display" id="routingDisplay">
+    <div style="text-align:center;color:#444;padding:20px;font-size:0.9rem;">
+      Click a preset or type a query to see the Cascade in action
+    </div>
+  </div>
+</div>
+
+<div class="autoplay-bar" style="margin:8px auto 12px;">
+  <button class="autoplay-toggle" id="autoplayBtn" onclick="toggleAutoplay()">
+    ▶ Auto-Demo (for screen recording)
+  </button>
+</div>
+
+</div><!-- end top-panel -->
+
+<div class="bottom-panel" id="bottomPanel">
+
+<div class="savings-bar" style="margin-top:16px;">
+  <div class="savings-text">Without Cascade every query costs ~300 tokens. With Cascade: <span class="saved-num" id="tokensSaved">0</span> tokens saved so far</div>
+</div>
+
+<div class="cascade-container" id="cascadeContainer">
+  <div class="travel-dot" id="travelDot"></div>
+  <div class="floating-query" id="floatingQuery"></div>
+  <div class="tier tier-0" data-delay="200">
+    <div class="tier-card">
+      <div class="tier-header">
+        <div class="tier-name">Tier 0 - Deterministic Detection</div>
+        <div class="tier-stats"><span class="stat-badge">0ms – Regex</span></div>
+      </div>
+      <div class="tier-intents">
+        <span class="intent-tag">PhD Analysis</span>
+        <span class="intent-tag">Correlation</span>
+        <span class="intent-tag">Concentration</span>
+        <span class="intent-tag">Anomaly</span>
+        <span class="intent-tag">Web Search Fast-Path</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tier-arrow" data-delay="400">
+    <div class="arrow-text">not caught → pass down</div>
+    <svg width="16" height="16" viewBox="0 0 20 20"><path d="M10 4 L10 16 M6 12 L10 16 L14 12" stroke="#444" stroke-width="2" fill="none"/></svg>
+  </div>
+
+  <div class="tier tier-1" data-delay="600">
+    <div class="tier-card">
+      <div class="tier-header">
+        <div class="tier-name">Tier 1 - Core Intents (80% of queries)</div>
+        <div class="tier-stats"><span class="stat-badge">0ms – Pattern Match</span></div>
+      </div>
+      <div class="tier-intents">
+        <span class="intent-tag">GREETING</span>
+        <span class="intent-tag">IDENTITY</span>
+        <span class="intent-tag">CAPABILITIES</span>
+        <span class="intent-tag">MEMORY_RECALL</span>
+        <span class="intent-tag">DATA_QUERY</span>
+        <span class="intent-tag">WEB_SEARCH</span>
+        <span class="intent-tag">DOCUMENT_QA</span>
+        <span class="intent-tag">PREDICTION</span>
+        <span class="intent-tag">DATA_LIBRARY</span>
+        <span class="intent-tag">DOCUMENT_GENERATION</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tier-arrow" data-delay="800">
+    <div class="arrow-text">not caught → semantic search</div>
+    <svg width="16" height="16" viewBox="0 0 20 20"><path d="M10 4 L10 16 M6 12 L10 16 L14 12" stroke="#444" stroke-width="2" fill="none"/></svg>
+  </div>
+
+  <div class="tier tier-2" data-delay="1000">
+    <div class="tier-card">
+      <div class="tier-header">
+        <div class="tier-name">Tier 2 - NVIDIA Embeddings (15% of queries)</div>
+        <div class="tier-stats"><span class="stat-badge">5ms – Semantic</span></div>
+      </div>
+      <div class="tier-intents">
+        <span class="intent-tag">ADVICE_REQUEST</span>
+        <span class="intent-tag">FOLLOWUP</span>
+        <span class="intent-tag">CLARIFICATION</span>
+        <span class="intent-tag">DEEP_DIVE</span>
+        <span class="intent-tag">COMPARISON</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tier-arrow" data-delay="1200">
+    <div class="arrow-text">still ambiguous → call LLM</div>
+    <svg width="16" height="16" viewBox="0 0 20 20"><path d="M10 4 L10 16 M6 12 L10 16 L14 12" stroke="#444" stroke-width="2" fill="none"/></svg>
+  </div>
+
+  <div class="tier tier-3" data-delay="1400">
+    <div class="tier-card">
+      <div class="tier-header">
+        <div class="tier-name">Tier 3 - NVIDIA LLM Fallback (5% of queries)</div>
+        <div class="tier-stats"><span class="stat-badge">100ms – LLM</span></div>
+      </div>
+      <div class="tier-intents">
+        <span class="intent-tag">Ambiguous Queries</span>
+        <span class="intent-tag">Complex Multi-Intent</span>
+        <span class="intent-tag">Edge Cases</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer" style="padding-bottom:80vh;">
+  <a href="https://lubot.ai">LuBot.ai</a> — Built by Lubo Bali
+  <br>
+  <div class="nvidia-badge">
+    Powered 100% by NVIDIA Nemotron
+  </div>
+</div>
+
+</div><!-- end bottom-panel -->
+
+<script>
+// Query routing rules (simplified simulation of the real cascade)
+const routingRules = {
+  tier0: {
+    patterns: [
+      { regex: /correlat/i, intent: 'CORRELATION_ANALYSIS' },
+      { regex: /concentrat|hhi|herfindahl/i, intent: 'CONCENTRATION_ANALYSIS' },
+      { regex: /anomal|outlier|unusual/i, intent: 'ANOMALY_DETECTION' },
+      { regex: /simpson.*paradox|paradox/i, intent: 'SIMPSONS_PARADOX' },
+      { regex: /predict|forecast/i, intent: 'PREDICTION' },
+      { regex: /search\s+(for|the|about)|google|look\s+up/i, intent: 'WEB_SEARCH' },
+    ],
+    name: 'Deterministic Detection'
+  },
+  tier1: {
+    patterns: [
+      { regex: /^(hi|hello|hey|good\s+(morning|afternoon|evening))/i, intent: 'GREETING' },
+      { regex: /who\s+are\s+you|what\s+are\s+you|your\s+name/i, intent: 'IDENTITY' },
+      { regex: /what\s+can\s+you|capabilities|help|features/i, intent: 'CAPABILITIES' },
+      { regex: /show\s+me|display|list|table|how\s+many|total|average|sum|count|revenue|salary|sales|amount/i, intent: 'DATA_QUERY' },
+      { regex: /remember|last\s+time|previous/i, intent: 'MEMORY_RECALL' },
+      { regex: /upload|my\s+file|csv|excel|document/i, intent: 'DATA_LIBRARY' },
+      { regex: /generate\s+report|create\s+report|pdf\s+report/i, intent: 'DOCUMENT_GENERATION' },
+    ],
+    name: 'Pattern Matching'
+  },
+  tier2: {
+    patterns: [
+      { regex: /explain|elaborate|more\s+detail|tell\s+me\s+more|further|deeper/i, intent: 'DEEP_DIVE' },
+      { regex: /follow.?up|also|and\s+what\s+about|what\s+else/i, intent: 'FOLLOWUP' },
+      { regex: /clarif|what\s+do\s+you\s+mean|not\s+sure/i, intent: 'CLARIFICATION' },
+      { regex: /compare|versus|vs|difference\s+between/i, intent: 'COMPARISON' },
+      { regex: /advice|suggest|recommend|should\s+I/i, intent: 'ADVICE_REQUEST' },
+    ],
+    name: 'NVIDIA Embeddings (NV-EmbedQA-E5-V5)'
+  }
+};
+
+let totalRouted = 0;
+let totalZeroToken = 0;
+let totalTokensSaved = 0;
+let autoplayInterval = null;
+
+const autoplayQueries = [
+  'What is the correlation between marketing spend and revenue?',
+  'hello, good morning',
+  'show me total revenue by region',
+  'why did profits drop last quarter despite higher volume?',
+  'what can you do?',
+  'can you explain that correlation further?',
+  'search for NVIDIA GTC 2026 schedule',
+  'is there a Simpsons Paradox in the hiring data?',
+  'if we cut marketing by 20% what happens to customer acquisition?',
+  'what is the HHI concentration of our suppliers?',
+  'average salary by department and gender',
+  'who are you?',
+  'show me anomalies in last month expenses',
+  'break down the root cause of churn in enterprise segment',
+  'predict next quarter sales',
+  'how many employees do we have?',
+  'what about the trend over time?',
+  'which departments are underperforming relative to headcount investment?',
+  'total cost by vendor',
+  'what drives customer lifetime value in our top segment?',
+  'hey LuBot',
+  'generate a PDF report for Q4',
+  'how does pricing sensitivity vary across regions and demographics?',
+  'show me outliers in employee salaries',
+  'remember what I asked yesterday about revenue',
+  'forecast demand for next 6 months',
+  'what is the concentration risk in our supply chain?',
+  'give me a strategic plan to reduce churn by 15% next quarter',
+];
+let autoplayIndex = 0;
+
+function classifyQuery(query) {
+  // Check tier 0
+  for (const rule of routingRules.tier0.patterns) {
+    if (rule.regex.test(query)) {
+      return { tier: 0, intent: rule.intent, tierName: routingRules.tier0.name };
+    }
+  }
+  // Check tier 1
+  for (const rule of routingRules.tier1.patterns) {
+    if (rule.regex.test(query)) {
+      return { tier: 1, intent: rule.intent, tierName: routingRules.tier1.name };
+    }
+  }
+  // Check tier 2
+  for (const rule of routingRules.tier2.patterns) {
+    if (rule.regex.test(query)) {
+      return { tier: 2, intent: rule.intent, tierName: routingRules.tier2.name };
+    }
+  }
+  // Tier 3 fallback — token cost varies by query complexity
+  const words = query.split(/\s+/).length;
+  let tokens, label;
+  if (words <= 8) { tokens = 150; label = '~150 tokens'; }
+  else if (words <= 12) { tokens = 280; label = '~280 tokens'; }
+  else if (words <= 16) { tokens = 420; label = '~420 tokens'; }
+  else { tokens = 580; label = '~580 tokens'; }
+  return { tier: 3, intent: 'COMPLEX_QUERY', tierName: 'Nemotron Nano 8B (LLM)', tokens, tokenLabel: label };
+}
+
+function simulateFromInput() {
+  const input = document.getElementById('queryInput');
+  if (input.value.trim()) {
+    simulateQuery(input.value.trim(), true);
+  }
+}
+
+function typeQuery(query, callback) {
+  const input = document.getElementById('queryInput');
+  input.value = '';
+  input.classList.add('typing');
+  let i = 0;
+  const speed = Math.max(15, Math.min(40, 600 / query.length));
+  function type() {
+    if (i < query.length) {
+      input.value += query.charAt(i);
+      i++;
+      setTimeout(type, speed);
+    } else {
+      input.classList.remove('typing');
+      if (callback) setTimeout(callback, 200);
+    }
+  }
+  type();
+}
+
+function simulateQuery(query, skipTyping) {
+  const doRoute = () => {
+    const result = classifyQuery(query);
+    const display = document.getElementById('routingDisplay');
+    display.innerHTML = '';
+    display.classList.add('scanning');
+    setTimeout(() => display.classList.remove('scanning'), 1500);
+    routeQueryVisual(query, result, display);
+  };
+
+  if (skipTyping) {
+    document.getElementById('queryInput').value = query;
+    doRoute();
+  } else {
+    typeQuery(query, doRoute);
+  }
+}
+
+function routeQueryVisual(query, result, display) {
+
+  const tier3Label = result.tokenLabel || '~200 tokens';
+  const tier3Time = result.tokens ? Math.round(50 + result.tokens * 0.2) + 'ms' : '100ms';
+  const tierLabels = [
+    { name: 'Tier 0 — Deterministic', time: '0ms', tokens: '0 tokens' },
+    { name: 'Tier 1 — Pattern Match', time: '0ms', tokens: '0 tokens' },
+    { name: 'Tier 2 — NVIDIA Embeddings', time: '5ms', tokens: '0 tokens' },
+    { name: 'Tier 3 — Nemotron Nano 8B', time: tier3Time, tokens: tier3Label },
+  ];
+
+  // Create steps
+  for (let i = 0; i <= result.tier; i++) {
+    const step = document.createElement('div');
+    step.className = 'route-step';
+    step.id = `step-${i}`;
+
+    const isCaught = (i === result.tier);
+    const icon = document.createElement('div');
+    icon.className = `step-icon ${isCaught ? 'catch-' + i : 'pass'}`;
+    icon.textContent = isCaught ? '✓' : '↓';
+
+    const text = document.createElement('div');
+    text.className = `step-text ${isCaught ? 'caught caught-' + i : ''}`;
+
+    if (isCaught) {
+      text.innerHTML = `<strong>${tierLabels[i].name}</strong> → caught as <strong>${result.intent}</strong>`;
+    } else {
+      text.textContent = `${tierLabels[i].name} → not matched, passing down...`;
+    }
+
+    const time = document.createElement('div');
+    time.className = 'step-time';
+    time.textContent = tierLabels[i].time;
+
+    step.appendChild(icon);
+    step.appendChild(text);
+    step.appendChild(time);
+    display.appendChild(step);
+  }
+
+  // Result banner
+  const banner = document.createElement('div');
+  banner.className = `result-banner tier-${result.tier}-result`;
+  banner.innerHTML = `
+    <div class="result-intent">→ ${result.intent}</div>
+    <div class="result-tokens">${result.tier < 3 ? 'ZERO tokens used' : result.tokenLabel + ' → Nemotron Nano 8B'}</div>
+  `;
+  display.appendChild(banner);
+
+  // Animate steps sequentially
+  let delay = 0;
+  for (let i = 0; i <= result.tier; i++) {
+    ((idx, d) => {
+      setTimeout(() => {
+        document.getElementById(`step-${idx}`).classList.add('active');
+        // Glow pulse on the corresponding tier card
+        const tierCard = document.querySelectorAll('.tier')[idx];
+        if (tierCard) {
+          const card = tierCard.querySelector('.tier-card');
+          card.classList.remove('glow-0','glow-1','glow-2','glow-3');
+          void card.offsetWidth; // force reflow for re-animation
+          if (idx === result.tier) {
+            card.classList.add('glow-' + idx);
+            setTimeout(() => {
+              card.classList.remove('glow-' + idx);
+              card.style.borderColor = '#222';
+            }, 2000);
+          } else {
+            card.style.borderColor = '#333';
+            setTimeout(() => { card.style.borderColor = '#222'; }, 400);
+          }
+        }
+      }, d);
+    })(i, delay);
+    delay += i === result.tier ? 400 : 600;
+  }
+
+  // Show banner
+  setTimeout(() => {
+    banner.classList.add('show');
+  }, delay + 200);
+
+  // Update counters with pop animation
+  totalRouted++;
+  if (result.tier < 3) totalZeroToken++;
+  const tokensSavedThisQuery = result.tier < 3 ? 300 : (300 - (result.tokens || 200));
+  totalTokensSaved += tokensSavedThisQuery;
+  updateCounters();
+
+  // Animate traveling dot through cascade tier cards
+  animateTravelDot(result);
+}
+
+function updateCounters() {
+  const elRouted = document.getElementById('counter-routed');
+  const elSaved = document.getElementById('counter-saved');
+  const elPct = document.getElementById('counter-pct');
+  elRouted.textContent = totalRouted;
+  elSaved.textContent = totalZeroToken;
+  const pct = totalRouted > 0 ? Math.round((totalZeroToken / totalRouted) * 100) : 0;
+  elPct.textContent = pct + '%';
+  document.getElementById('tokensSaved').textContent = totalTokensSaved.toLocaleString();
+  // Pop animation
+  [elRouted, elSaved, elPct].forEach(el => {
+    el.classList.remove('pop');
+    void el.offsetWidth;
+    el.classList.add('pop');
+  });
+}
+
+function animateTravelDot(result) {
+  const container = document.getElementById('cascadeContainer');
+  const dot = document.getElementById('travelDot');
+  const floater = document.getElementById('floatingQuery');
+  const tiers = container.querySelectorAll('.tier');
+  const panel = document.getElementById('bottomPanel');
+
+  if (!tiers.length) return;
+
+  // Scroll back to top instantly (no smooth — avoids stale positions)
+  panel.scrollTop = 0;
+
+  // Set query text on floating label
+  const query = document.getElementById('queryInput').value;
+  floater.textContent = query.length > 50 ? query.substring(0, 50) + '...' : query;
+
+  // Remove old classes
+  dot.classList.remove('active', 'tier-0-dot', 'tier-1-dot', 'tier-2-dot', 'tier-3-dot');
+  floater.classList.remove('active');
+
+  // Use offsetTop (relative to cascade-container) — scroll-independent
+  const startY = tiers[0].offsetTop - 10;
+
+  dot.style.top = startY + 'px';
+  dot.style.transition = 'none';
+  void dot.offsetWidth;
+
+  dot.classList.add('active', 'tier-0-dot');
+  floater.classList.add('active');
+  floater.style.top = (startY - 30) + 'px';
+  floater.style.transition = 'none';
+  void floater.offsetWidth;
+
+  // Animate through each tier
+  let delay = 0;
+  for (let i = 0; i <= Math.min(result.tier, tiers.length - 1); i++) {
+    ((idx, d) => {
+      setTimeout(() => {
+        const tierEl = tiers[idx];
+        // Position dot at center of tier (offsetTop is relative to cascade-container — stable)
+        const midY = tierEl.offsetTop + tierEl.offsetHeight / 2 - 7;
+
+        dot.style.transition = 'top 0.5s ease, background 0.3s, box-shadow 0.3s';
+        dot.style.top = midY + 'px';
+        floater.style.transition = 'top 0.5s ease, opacity 0.3s';
+        floater.style.top = (midY - 30) + 'px';
+
+        dot.classList.remove('tier-0-dot', 'tier-1-dot', 'tier-2-dot', 'tier-3-dot');
+        dot.classList.add('tier-' + idx + '-dot');
+
+        // Auto-scroll: tier position relative to bottom-panel = container offset + tier offset
+        const panelHeight = panel.clientHeight;
+        const tierTopInPanel = container.offsetTop + tierEl.offsetTop;
+        const tierHeight = tierEl.offsetHeight;
+        const scrollTarget = tierTopInPanel - (panelHeight / 2) + (tierHeight / 2);
+        panel.scrollTo({ top: Math.max(0, scrollTarget), behavior: 'smooth' });
+
+        if (idx === result.tier) {
+          // Caught — pulse and fade
+          setTimeout(() => {
+            floater.style.borderColor = idx === 0 ? '#76b900' : idx === 1 ? '#00d4aa' : idx === 2 ? '#0088ff' : '#ff6600';
+            floater.style.color = idx === 0 ? '#76b900' : idx === 1 ? '#00d4aa' : idx === 2 ? '#0088ff' : '#ff6600';
+          }, 200);
+          setTimeout(() => {
+            dot.classList.remove('active');
+            floater.classList.remove('active');
+          }, 1500);
+        }
+      }, d);
+    })(i, delay);
+    delay += 600;
+  }
+}
+
+function toggleAutoplay() {
+  const btn = document.getElementById('autoplayBtn');
+  if (autoplayInterval) {
+    clearInterval(autoplayInterval);
+    autoplayInterval = null;
+    btn.classList.remove('active');
+    btn.textContent = '▶ Auto-Demo (for screen recording)';
+  } else {
+    btn.classList.add('active');
+    btn.textContent = '■ Stop Auto-Demo';
+    autoplayIndex = 0;
+    simulateQuery(autoplayQueries[autoplayIndex]);
+    autoplayInterval = setInterval(() => {
+      autoplayIndex = (autoplayIndex + 1) % autoplayQueries.length;
+      simulateQuery(autoplayQueries[autoplayIndex]);
+    }, 5200);
+  }
+}
+
+// Animate tiers on page load
+window.addEventListener('load', () => {
+  document.querySelectorAll('.tier, .tier-arrow').forEach((el) => {
+    const delay = parseInt(el.dataset.delay) || 0;
+    setTimeout(() => {
+      el.classList.add('visible');
+    }, delay);
+  });
+
+});
+</script>
+</body>
+</html>

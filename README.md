@@ -25,6 +25,8 @@ Real math. Real statistics. Best NVIDIA.
 
 ### The LuBot Cascade — 4-Tier Intent Routing
 
+**[Open Interactive Cascade Visualization →](docs/cascade.html)**
+
 The idea came from a simple instinct: if the agent can figure out what the user wants without calling an LLM, it should. Most AI apps send every user message to an LLM just to figure out what the user wants. Thats slow and expensive. I built a 4-stage cascade that tries the cheapest method first and only escalates when needed — 95% of routing decisions cost zero LLM tokens:
 
 ```
