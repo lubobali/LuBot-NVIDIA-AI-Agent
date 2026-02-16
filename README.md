@@ -75,7 +75,7 @@ Tier 2 - FULL PhD (Nemotron Ultra 253B, 500ms)
 
 ### Self-Learning RAG System
 
-One of the most unique features is that LuBot has a self-learning RAG system that retrieves insights from your interactions and data patterns that you cant see by eye. The more you use it, the more it remembers about your business, your preferences, your needs. Over time LuBot becomes your best partner that knows everything about your business. Plus 17 batch workers running every night so it never misses important data.
+One of the most unique features is that LuBot has a self-learning RAG system that retrieves insights from your interactions and data patterns that you cant see by eye. The more you use it, the more it remembers about your business, your preferences, your needs. Over time LuBot becomes your best partner that knows everything about your business. Plus 18 batch workers running every night so it never misses important data.
 
 ### RAG & Embedding Pipeline — NVIDIA NV-EmbedQA-E5-V5
 
@@ -174,9 +174,9 @@ Upload a CSV or Excel file, ask questions about your data, and watch it route th
 | **Codebase** | 112,270 lines of code |
 | **Python Files** | 248 files |
 | **AI Tools** | 28 tools (SQL, charts, PhD analysis, RAG, predictions) |
-| **Database** | 34 tables, 450+ columns (Neon hot + B2 cold storage) |
+| **Database** | 36 tables, 500+ columns (Neon hot + B2 cold storage) |
 | **API Endpoints** | 40+ (FastAPI) |
-| **Batch Workers** | 17 nightly workers for self-learning |
+| **Batch Workers** | 18 nightly workers for self-learning |
 | **NVIDIA Success Rate** | 99%+ |
 | **Response Time** | 8-10 seconds (first query), 8 seconds (warm) |
 | **NVIDIA Models** | 6 (Ultra 253B, Nano 8B, Vision 12B VL, NV-EmbedQA-E5-v5, Nemotron-3-Nano 30B, Nemotron-mini 2.7B) |
