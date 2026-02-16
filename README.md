@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=nlpFFY1MidE"><img src="docs/youtube-icon.png" height="30"> <strong>Watch 10-min Demo</strong></a> &nbsp;|&nbsp;
-  <a href="https://lubot.ai"><img src="docs/lubot-logo.png" height="30"> <strong>Try Live</strong></a> &nbsp; (password: <code>nemotron</code>)
+  <a href="https://lubot.ai"><img src="docs/lubot-logo.png" height="30"> <strong>Try Live</strong></a>
 </p>
 
 <p align="center"><i>I built LuBot alone, from zero, over the last 8 months. 100% powered by NVIDIA — cloud APIs + self-hosted GPU.</i></p>
