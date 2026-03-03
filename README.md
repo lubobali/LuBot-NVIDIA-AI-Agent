@@ -12,7 +12,7 @@
   <a href="https://lubot.ai/architecture.html">🏗️ <strong>Architecture</strong></a>
 </p>
 
-<p align="center"><i>I built LuBot alone, from zero, over the last 8 months. 100% powered by NVIDIA — cloud APIs + self-hosted GPU.</i></p>
+<p align="center"><i>I built LuBot alone, from zero, over the last 9 months. 100% powered by NVIDIA — cloud APIs + self-hosted GPU.</i></p>
 
 **[LuBot.ai](https://lubot.ai)** is live right now. Real business users. PhD-level statistical insights. A self-learning RAG system that gets smarter over time — finding patterns in your data that consultants charge thousands to discover.
 
@@ -171,17 +171,17 @@ Upload a CSV or Excel file, ask questions about your data, and watch it route th
 
 | Metric | Value |
 |--------|-------|
-| **Codebase** | 112,270 lines of code |
-| **Python Files** | 248 files |
+| **Codebase** | 122,728 lines of code |
+| **Source Files** | 273 files (253 Python + 20 TypeScript/React) |
 | **AI Tools** | 28 tools (SQL, charts, PhD analysis, RAG, predictions) |
 | **Database** | 36 tables, 500+ columns (Neon hot + B2 cold storage) |
-| **API Endpoints** | 40+ (FastAPI) |
+| **API Endpoints** | 42 (FastAPI) |
 | **Batch Workers** | 18 nightly workers for self-learning |
 | **NVIDIA Success Rate** | 99%+ |
 | **Response Time** | 8-10 seconds (first query), 8 seconds (warm) |
 | **NVIDIA Models** | 6 (Ultra 253B, Nano 8B, Vision 12B VL, NV-EmbedQA-E5-v5, Nemotron-3-Nano 30B, Nemotron-mini 2.7B) |
 | **Infrastructure** | Hetzner Cloud US, Docker, Neon PostgreSQL, Backblaze B2, RTX 4090 |
-| **Built By** | One person. 8 months. Still going. |
+| **Built By** | One person. 9 months. Still going. |
 
 ### Quick Start
 
